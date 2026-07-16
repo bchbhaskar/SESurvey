@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Form SES-1 · Socioeconomic Status Assessment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;0,700;1,500&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EDE9DE;
+    --paper-line:#d9d2bf;
+    --ink:#1C2541;
+    --ink-soft:#3d4a6b;
+    --teal:#3F6B5C;
+    --teal-dark:#2c4d42;
+    --brass:#B98A2E;
+    --brass-light:#e8c877;
+    --red-stamp:#9c3b2e;
+    --charcoal:#2B2B28;
+    --card:#f7f4ec;
+    --shadow: rgba(28,37,65,0.12);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      repeating-linear-gradient(180deg, rgba(28,37,65,0.02) 0px, rgba(28,37,65,0.02) 1px, transparent 1px, transparent 32px),
+      var(--paper);
+    color:var(--charcoal);
+    font-family:'IBM Plex Sans', sans-serif;
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;}
+  }
+
+  .wrap{max-width:760px;margin:0 auto;padding:28px 20px 80px;}
+
+  /* ===== Header / document title block ===== */
+  .doc-head{
+    border:2px solid var(--ink);
+    padding:22px 24px 18px;
+    position:relative;
+    background:var(--card);
+    box-shadow:6px 6px 0 var(--shadow);
+  }
+  .doc-head::before{
+    content:"";
+    position:absolute; inset:6px;
+    border:1px solid var(--paper-line);
+    pointer-events:none;
+  }
+  .eyebrow-row{
+    display:flex; justify-content:space-between; align-items:baseline;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px; letter-spacing:0.12em; text-transform:uppercase;
+    color:var(--ink-soft);
+    margin-bottom:10px;
+  }
+  h1{
+    font-family:'Lora', serif;
+    font-weight:700;
+    font-size:clamp(26px,5vw,34px);
+    margin:0 0 6px;
+    color:var(--ink);
+    letter-spacing:-0.01em;
+  }
+  .doc-sub{
+    font-size:14.5px;
+    color:var(--ink-soft);
+    max-width:52ch;
+    line-height:1.5;
+  }
+  .field-count{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    color:var(--ink-soft);
+    margin-top:14px;
+    border-top:1px dashed var(--paper-line);
+    padding-top:10px;
+  }
+
+  /* ===== Progress ledger tabs ===== */
+  .ledger{
+    display:flex; margin-top:22px; border:1px solid var(--ink); border-radius:2px; overflow:hidden;
+    font-family:'IBM Plex Mono', monospace; font-size:11.5px;
+  }
+  .ledger .tab{
+    flex:1; text-align:center; padding:9px 4px; color:var(--ink-soft);
+    background:var(--paper); border-right:1px solid var(--ink);
+    letter-spacing:0.04em; position:relative;
+  }
+  .ledger .tab:last-child{border-right:none;}
+  .ledger .tab.active{background:var(--ink); color:var(--paper);}
+  .ledger .tab.done{background:var(--teal); color:#fff;}
+
+  /* ===== Card / section ===== */
+  .panel{
+    background:var(--card);
+    border:1px solid var(--ink);
+    margin-top:18px;
+    padding:26px 24px 24px;
+    position:relative;
+  }
+  .panel .num{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px; color:var(--brass);
+    letter-spacing:0.08em;
+    margin-bottom:4px;
+  }
+  .panel h2{
+    font-family:'Lora', serif; font-size:21px; font-weight:600;
+    margin:0 0 4px; color:var(--ink);
+  }
+  .panel .hint{
+    font-size:13px; color:var(--ink-soft); margin-bottom:18px; line-height:1.5;
+  }
+
+  .options{display:flex; flex-direction:column; gap:9px;}
+  .opt{
+    display:flex; align-items:center; gap:12px;
+    border:1px solid var(--paper-line);
+    background:#fff;
+    padding:12px 14px;
+    cursor:pointer;
+    transition:border-color 0.15s, background 0.15s, transform 0.1s;
+    font-size:14.5px;
+  }
+  .opt:hover{border-color:var(--teal); background:#fbfaf5;}
+  .opt.selected{
+    border-color:var(--ink); background:#fff9ea;
+    box-shadow:2px 2px 0 var(--shadow);
+  }
+  .opt input{accent-color:var(--ink); width:16px; height:16px; flex:none;}
+  .opt .opt-label{flex:1;}
+  .opt .opt-code{
+    font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--brass);
+    flex:none;
+  }
+  .opt:focus-within{outline:2px solid var(--teal); outline-offset:2px;}
+
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:9px;}
+  @media (max-width:520px){.grid2{grid-template-columns:1fr;}}
+
+  .check-grid{display:grid; grid-template-columns:1fr 1fr; gap:8px;}
+  @media (max-width:520px){.check-grid{grid-template-columns:1fr;}}
+  .chk{
+    display:flex; align-items:center; gap:10px;
+    border:1px solid var(--paper-line); background:#fff;
+    padding:10px 12px; cursor:pointer; font-size:13.5px;
+  }
+  .chk:hover{border-color:var(--teal);}
+  .chk.selected{border-color:var(--ink); background:#fff9ea;}
+  .chk input{accent-color:var(--teal);}
+
+  input[type=text], input[type=number]{
+    width:100%; padding:11px 12px; border:1px solid var(--paper-line);
+    background:#fff; font-family:'IBM Plex Sans',sans-serif; font-size:14.5px; color:var(--charcoal);
+  }
+  input[type=text]:focus, input[type=number]:focus{outline:2px solid var(--teal); outline-offset:1px; border-color:var(--teal);}
+  label.field-label{display:block; font-size:12.5px; color:var(--ink-soft); margin-bottom:6px; font-family:'IBM Plex Mono',monospace; letter-spacing:0.03em;}
+
+  /* ===== Nav buttons ===== */
+  .nav-row{display:flex; justify-content:space-between; align-items:center; margin-top:22px;}
+  button{
+    font-family:'IBM Plex Sans', sans-serif; font-weight:600; font-size:14px;
+    padding:12px 22px; border:2px solid var(--ink); cursor:pointer;
+    background:var(--ink); color:var(--paper);
+    transition:transform 0.1s, background 0.15s;
+  }
+  button:hover{background:var(--teal-dark); border-color:var(--teal-dark);}
+  button:active{transform:translateY(1px);}
+  button.ghost{background:transparent; color:var(--ink);}
+  button.ghost:hover{background:rgba(28,37,65,0.06);}
+  button:disabled{opacity:0.35; cursor:not-allowed;}
+  button:disabled:hover{background:var(--ink); border-color:var(--ink);}
+
+  /* ===== Results / certificate ===== */
+  .cert{
+    border:2px solid var(--ink); background:var(--card); padding:32px 28px;
+    position:relative; margin-top:18px; overflow:hidden;
+  }
+  .cert::before{content:""; position:absolute; inset:7px; border:1px solid var(--paper-line); pointer-events:none;}
+  .cert-eyebrow{font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink-soft);}
+  .cert h2{font-family:'Lora',serif; font-size:26px; margin:8px 0 20px; color:var(--ink);}
+
+  .class-row{display:flex; align-items:center; gap:22px; flex-wrap:wrap;}
+  .stamp{
+    width:112px; height:112px; flex:none; border-radius:50%;
+    border:4px double var(--red-stamp); color:var(--red-stamp);
+    display:flex; align-items:center; justify-content:center; text-align:center;
+    font-family:'IBM Plex Mono', monospace; font-weight:700; font-size:12px;
+    letter-spacing:0.03em; line-height:1.25; transform:rotate(-9deg) scale(0.4);
+    opacity:0; padding:6px;
+    animation: stampIn 0.5s cubic-bezier(.2,1.4,.4,1) 0.15s forwards;
+  }
+  @keyframes stampIn{
+    0%{opacity:0; transform:rotate(-9deg) scale(2.2);}
+    60%{opacity:1; transform:rotate(-9deg) scale(0.92);}
+    100%{opacity:1; transform:rotate(-9deg) scale(1);}
+  }
+  .class-info{flex:1; min-width:220px;}
+  .class-name{font-family:'Lora',serif; font-size:24px; font-weight:700; color:var(--ink);}
+  .class-desc{font-size:13.5px; color:var(--ink-soft); margin-top:6px; line-height:1.55; max-width:44ch;}
+
+  .score-total{
+    font-family:'IBM Plex Mono',monospace; font-size:13px; color:var(--brass); margin-top:4px;
+  }
+
+  .breakdown{margin-top:26px;}
+  .bd-row{margin-bottom:14px;}
+  .bd-label{
+    display:flex; justify-content:space-between; font-size:12.5px; color:var(--ink-soft);
+    font-family:'IBM Plex Mono',monospace; margin-bottom:5px;
+  }
+  .bd-track{height:10px; background:var(--paper-line); position:relative;}
+  .bd-fill{height:100%; background:var(--teal); width:0%; transition:width 0.7s ease;}
+
+  .footnote{
+    margin-top:24px; padding-top:16px; border-top:1px dashed var(--paper-line);
+    font-size:12px; color:var(--ink-soft); line-height:1.6;
+  }
+
+  .cert-actions{display:flex; gap:10px; margin-top:22px; flex-wrap:wrap;}
+
+  .page-footer{
+    text-align:center;
+    margin-top:36px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px;
+    letter-spacing:0.06em;
+    color:var(--ink-soft);
+    opacity:0.75;
+  }
+
+  @media print{
+    body{background:#fff;}
+    .doc-head, .ledger, .cert-actions{display:none;}
+    .cert{border-color:#000;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="doc-head">
+    <div class="eyebrow-row">
+      <span>Form SES–1 · Rev. 2026</span>
+      <span id="today"></span>
+    </div>
+    <h1>Socioeconomic Status Assessment</h1>
+    <h2>Chandanpur Panchayat, Dhenkanal</h2>
+    <div class="doc-sub">A short composite questionnaire covering education, occupation, household income and living conditions — scored into a five-tier classification at the end.</div>
+    <div class="field-count">5 sections · roughly 4 minutes · answers are not stored anywhere, only kept on this screen</div>
+  </div>
+
+  <div class="ledger" id="ledger"></div>
+
+  <div id="formHost"></div>
+
+  <div class="page-footer">Conceptualized by Burla Chandra Bhaskar</div>
+
+</div>
+
+<script>
+(function(){
+
+  var today = new Date();
+  document.getElementById('today').textContent = today.toLocaleDateString('en-IN', {day:'2-digit', month:'short', year:'numeric'});
+
+  // ---------------- DATA MODEL ----------------
+  // Each section: id, title, num, hint, and a render/collect approach.
+
+  var sections = [
+    {
+      id:'education',
+      num:'§1-Education',
+      title:'Education',
+      hint:'Select the highest level of education completed by the main earning member of the household.',
+      type:'radio',
+      field:'education',
+      options:[
+        {v:1, code:'ED-1', label:'No formal schooling'},
+        {v:2, code:'ED-2', label:'Primary school (up to class 5)'},
+        {v:3, code:'ED-3', label:'Secondary school (up to class 10)'},
+        {v:4, code:'ED-4', label:'Higher secondary / diploma'},
+        {v:5, code:'ED-5', label:'Graduate degree'},
+        {v:6, code:'ED-6', label:'Postgraduate or professional degree'}
+      ]
+    },
+    {
+      id:'occupation',
+      num:'§2-Occupation',
+      title:'Occupation',
+      hint:'Select the category that best matches the main earning member’s current occupation.',
+      type:'radio',
+      field:'occupation',
+      options:[
+        {v:1, code:'OC-1', label:'Unemployed / no regular occupation'},
+        {v:2, code:'OC-2', label:'Unskilled manual labour'},
+        {v:3, code:'OC-3', label:'Skilled worker or tradesperson'},
+        {v:4, code:'OC-4', label:'Clerical staff, small shop owner, or farmer'},
+        {v:5, code:'OC-5', label:'Semi-professional (teacher, supervisor, technician)'},
+        {v:6, code:'OC-6', label:'Professional or senior management (doctor, engineer, executive)'}
+      ]
+    },
+    {
+      id:'income',
+      num:'§3-Income',
+      title:'Household income',
+      hint:'Select the bracket that best matches total monthly household income, in Indian Rupees (₹).',
+      type:'radio',
+      field:'income',
+      options:[
+        {v:1, code:'IN-1', label:'Below ₹8,000'},
+        {v:2, code:'IN-2', label:'₹8,000 – ₹20,000'},
+        {v:3, code:'IN-3', label:'₹20,000 – ₹40,000'},
+        {v:4, code:'IN-4', label:'₹40,000 – ₹75,000'},
+        {v:5, code:'IN-5', label:'₹75,000 – ₹1,50,000'},
+        {v:6, code:'IN-6', label:'Above ₹1,50,000'}
+      ]
+    },
+    {
+      id:'caste',
+      num:'§4-Caste',
+      title:'Caste category',
+      hint:'This is collected as demographic context only — it is not used in the composite score below. You may skip it.',
+      type:'radio',
+      field:'caste',
+      optional:true,
+      options:[
+        {v:'general', code:'CS-1', label:'General / Unreserved'},
+        {v:'obc', code:'CS-2', label:'OBC (Other Backward Class)'},
+        {v:'sc', code:'CS-3', label:'SC (Scheduled Caste)'},
+        {v:'st', code:'CS-4', label:'ST (Scheduled Tribe)'},
+        {v:'other', code:'CS-5', label:'Other'},
+        {v:'na', code:'CS-6', label:'Prefer not to say'}
+      ]
+    },
+    {
+      id:'household',
+      num:'§5-Amenities',
+      title:'Household conditions',
+      hint:'Household size and amenities help refine the picture, but are optional.',
+      type:'household'
+    }
+  ];
+
+  var amenitiesList = [
+    'Own home (not rented)',
+    'Four-wheeler vehicle',
+    'Two-wheeler vehicle',
+    'Air conditioner',
+    'Computer or laptop',
+    'Broadband / high-speed internet',
+    'Domestic help employed',
+    'Health insurance coverage'
+  ];
+
+  var answers = { education:null, occupation:null, income:null, caste:null, householdSize:'', amenities:[] };
+  var current = 0; // index into sections, sections.length == results screen
+
+  var ledgerEl = document.getElementById('ledger');
+  var hostEl = document.getElementById('formHost');
+
+  function renderLedger(){
+    ledgerEl.innerHTML='';
+    sections.forEach(function(s, i){
+      var d = document.createElement('div');
+      d.className = 'tab' + (i===current ? ' active' : (i<current ? ' done':''));
+      d.textContent = s.num;
+      ledgerEl.appendChild(d);
+    });
+    var res = document.createElement('div');
+    res.className = 'tab' + (current===sections.length ? ' active':'');
+    res.textContent = 'RESULT';
+    ledgerEl.appendChild(res);
+  }
+
+  function canAdvance(idx){
+    var s = sections[idx];
+    if(s.type==='radio') return s.optional ? true : (answers[s.field] !== null);
+    if(s.type==='household') return true;
+    return true;
+  }
+
+  function renderSection(idx){
+    var s = sections[idx];
+    var panel = document.createElement('div');
+    panel.className='panel';
+
+    var num = document.createElement('div'); num.className='num'; num.textContent=s.num+' / '+sections.length;
+    var h2 = document.createElement('h2'); h2.textContent=s.title;
+    var hint = document.createElement('div'); hint.className='hint'; hint.textContent=s.hint;
+    panel.appendChild(num); panel.appendChild(h2); panel.appendChild(hint);
+
+    if(s.type==='radio'){
+      var opts = document.createElement('div'); opts.className='options';
+      s.options.forEach(function(o){
+        var row = document.createElement('label');
+        row.className='opt' + (answers[s.field]===o.v ? ' selected':'');
+        row.innerHTML = '<input type="radio" name="'+s.field+'" '+(answers[s.field]===o.v?'checked':'')+'/>' +
+          '<span class="opt-label">'+o.label+'</span><span class="opt-code">'+o.code+'</span>';
+        row.querySelector('input').addEventListener('change', function(){
+          answers[s.field] = o.v;
+          renderAll();
+        });
+        opts.appendChild(row);
+      });
+      panel.appendChild(opts);
+    }
+
+    if(s.type==='household'){
+      var sizeWrap = document.createElement('div');
+      sizeWrap.style.marginBottom='20px';
+      var lbl = document.createElement('label'); lbl.className='field-label'; lbl.textContent='NUMBER OF PEOPLE IN HOUSEHOLD (OPTIONAL)';
+      var inp = document.createElement('input'); inp.type='number'; inp.min='1'; inp.max='20'; inp.placeholder='e.g. 4';
+      inp.value = answers.householdSize;
+      inp.addEventListener('input', function(){ answers.householdSize = inp.value; });
+      sizeWrap.appendChild(lbl); sizeWrap.appendChild(inp);
+      panel.appendChild(sizeWrap);
+
+      var lbl2 = document.createElement('label'); lbl2.className='field-label'; lbl2.style.marginBottom='8px'; lbl2.textContent='AMENITIES PRESENT IN THE HOUSEHOLD (OPTIONAL)';
+      panel.appendChild(lbl2);
+
+      var cg = document.createElement('div'); cg.className='check-grid';
+      amenitiesList.forEach(function(a){
+        var row = document.createElement('label');
+        var checked = answers.amenities.indexOf(a)>-1;
+        row.className='chk'+(checked?' selected':'');
+        row.innerHTML = '<input type="checkbox" '+(checked?'checked':'')+'/><span>'+a+'</span>';
+        row.querySelector('input').addEventListener('change', function(e){
+          if(e.target.checked){ if(answers.amenities.indexOf(a)===-1) answers.amenities.push(a); }
+          else { answers.amenities = answers.amenities.filter(function(x){return x!==a;}); }
+          renderAll();
+        });
+        cg.appendChild(row);
+      });
+      panel.appendChild(cg);
+    }
+
+    var nav = document.createElement('div'); nav.className='nav-row';
+    var back = document.createElement('button'); back.className='ghost'; back.textContent='← Back';
+    back.disabled = idx===0;
+    back.addEventListener('click', function(){ current = Math.max(0, current-1); renderAll(); });
+
+    var next = document.createElement('button');
+    var isSkippable = s.optional && answers[s.field]===null && idx!==sections.length-1;
+    next.textContent = isSkippable ? 'Skip →' : ((idx===sections.length-1) ? 'See my results →' : 'Continue →');
+    next.disabled = !canAdvance(idx);
+    next.addEventListener('click', function(){
+      current = current+1;
+      renderAll();
+      window.scrollTo({top:0, behavior:'smooth'});
+    });
+
+    nav.appendChild(back); nav.appendChild(next);
+    panel.appendChild(nav);
+
+    hostEl.innerHTML='';
+    hostEl.appendChild(panel);
+  }
+
+  // ---------------- SCORING ----------------
+
+  function computeResults(){
+    // each of education / occupation / income scored 1-6, average -> map to 1-5 tier for display
+    var e = answers.education, o = answers.occupation, inc = answers.income;
+    var amenityScore = Math.min(answers.amenities.length, 8); // 0-8
+
+    // normalize each core factor to a 0-100 scale (1..6 -> 0..100)
+    var eScore = ((e-1)/5)*100;
+    var oScore = ((o-1)/5)*100;
+    var iScore = ((inc-1)/5)*100;
+    var aScore = (amenityScore/8)*100;
+
+    // composite weights: income 35%, occupation 30%, education 25%, amenities 10%
+    var composite = eScore*0.25 + oScore*0.30 + iScore*0.35 + aScore*0.10;
+
+    var tier;
+    if(composite >= 80) tier = {name:'Upper class', code:'TIER I', desc:'High attainment across education, occupation and income, with strong material comfort at home.'};
+    else if(composite >= 60) tier = {name:'Upper-middle class', code:'TIER II', desc:'Solid, stable footing across most measures, with room to grow in one or two areas.'};
+    else if(composite >= 40) tier = {name:'Middle class', code:'TIER III', desc:'A balanced but modest position — comfortable in some respects, stretched in others.'};
+    else if(composite >= 20) tier = {name:'Lower-middle class', code:'TIER IV', desc:'Meaningful constraints in income and/or occupation, with basic needs generally met.'};
+    else tier = {name:'Lower class', code:'TIER V', desc:'Significant constraints across most measures assessed here.'};
+
+    return {eScore:eScore, oScore:oScore, iScore:iScore, aScore:aScore, composite:composite, tier:tier};
+  }
+
+  var casteLabels = {general:'General / Unreserved', obc:'OBC', sc:'SC', st:'ST', other:'Other', na:'Prefer not to say'};
+
+  function renderResults(){
+    var r = computeResults();
+    var cert = document.createElement('div'); cert.className='cert';
+
+    var casteLine = '';
+    if(answers.caste && answers.caste !== 'na'){
+      casteLine = '<div class="score-total" style="margin-top:2px;">Caste category (demographic only, not scored): '+casteLabels[answers.caste]+'</div>';
+    }
+
+    cert.innerHTML =
+      '<div class="cert-eyebrow">Assessment complete · Form SES–1</div>' +
+      '<h2>Your composite result</h2>' +
+      '<div class="class-row">' +
+        '<div class="stamp">'+r.tier.code+'<br>ASSESSED</div>' +
+        '<div class="class-info">' +
+          '<div class="class-name">'+r.tier.name+'</div>' +
+          '<div class="class-desc">'+r.tier.desc+'</div>' +
+          '<div class="score-total">Composite score: '+Math.round(r.composite)+' / 100</div>' +
+          casteLine +
+        '</div>' +
+      '</div>';
+
+    var bd = document.createElement('div'); bd.className='breakdown';
+    var rows = [
+      {label:'Education', val:r.eScore},
+      {label:'Occupation', val:r.oScore},
+      {label:'Household income', val:r.iScore},
+      {label:'Amenities / living conditions', val:r.aScore}
+    ];
+    rows.forEach(function(row){
+      var wrap = document.createElement('div'); wrap.className='bd-row';
+      wrap.innerHTML = '<div class="bd-label"><span>'+row.label+'</span><span>'+Math.round(row.val)+'/100</span></div>' +
+        '<div class="bd-track"><div class="bd-fill" style="width:0%"></div></div>';
+      bd.appendChild(wrap);
+      setTimeout((function(w,v){ return function(){ w.querySelector('.bd-fill').style.width = v+'%'; }; })(wrap, row.val), 50);
+    });
+    cert.appendChild(bd);
+
+    var foot = document.createElement('div'); foot.className='footnote';
+    foot.textContent = 'This is a simplified, self-assessment instrument for informal use — education, occupation and income are weighted 25/30/35%, with a 10% adjustment for household amenities. It is not a validated clinical or research-grade SES scale, and results should be read as indicative rather than diagnostic.';
+    cert.appendChild(foot);
+
+    var actions = document.createElement('div'); actions.className='cert-actions';
+    var again = document.createElement('button'); again.className='ghost'; again.textContent='← Edit answers';
+    again.addEventListener('click', function(){ current = sections.length-1; renderAll(); window.scrollTo({top:0,behavior:'smooth'}); });
+    var printBtn = document.createElement('button'); printBtn.textContent='Print / save result';
+    printBtn.addEventListener('click', function(){ window.print(); });
+    actions.appendChild(again); actions.appendChild(printBtn);
+    cert.appendChild(actions);
+
+    hostEl.innerHTML='';
+    hostEl.appendChild(cert);
+  }
+
+  function renderAll(){
+    renderLedger();
+    if(current >= sections.length){ renderResults(); }
+    else { renderSection(current); }
+  }
+
+  renderAll();
+})();
+</script>
+</body>
+</html>
